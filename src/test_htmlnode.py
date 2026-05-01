@@ -8,7 +8,7 @@ class TestHTMLNode(unittest.TestCase):
             "href": "https://www.boot.dev",
             "target": "_blank",
         }
-        props_as_string = 'href="https://www.boot.dev" target="_blank" '
+        props_as_string = ' href="https://www.boot.dev" target="_blank"'
         node = HTMLNode("div", "bee movie script", None, props)
         self.assertEqual(props_as_string, node.props_to_html());
 

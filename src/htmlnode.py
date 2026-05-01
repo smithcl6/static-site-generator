@@ -15,7 +15,7 @@ class HTMLNode:
         if not self.props:
             return ""
         
-        return str(functools.reduce(lambda accumulator, dict: accumulator + f'{dict[0]}="{dict[1]}" ' , list(self.props.items()), ""))
+        return str(functools.reduce(lambda accumulator, dict: accumulator + f' {dict[0]}="{dict[1]}"' , list(self.props.items()), ""))
     
     def __repr__(self):
-        print(f"{self.tag} {self.value} {self.children} {self.props}")
+        return f"HTMLNode({self.tag} {self.value} {self.children} {self.props})"
