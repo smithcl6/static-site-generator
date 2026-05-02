@@ -14,5 +14,5 @@ class TestLeafNode(unittest.TestCase):
 
     def test_leaf_to_html_with_props(self):
         props = {"style": "color: blue;"}
-        node = LeafNode("p", "The Fitness Gram Pacer Test is a...", None, props)
+        node = LeafNode("p", "The Fitness Gram Pacer Test is a...", props)
         self.assertEqual(node.to_html(), '<p style="color: blue;">The Fitness Gram Pacer Test is a...</p>')
