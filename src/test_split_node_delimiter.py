@@ -1,5 +1,11 @@
 import unittest
-from split_nodes_delimiter import split_nodes_delimiter
+from split_nodes_delimiter import (
+    split_nodes_delimiter, 
+    extract_markdown_images, 
+    extract_markdown_links, 
+    split_nodes_image, 
+    split_nodes_link
+) 
 from textnode import TextNode, TextType
 
 class TestSplitNodeDelimiter(unittest.TestCase):
@@ -16,8 +22,6 @@ class TestSplitNodeDelimiter(unittest.TestCase):
             self.assertEqual(new_nodes[i].text, expected_list[i].text)
             self.assertEqual(new_nodes[i].text_type, expected_list[i].text_type)
 
-
-    
     def test_italic_delimiter(self):
         node = TextNode("This is _italicized_ text.", TextType.TEXT)
         new_nodes:list[TextNode] = split_nodes_delimiter([node], "_", TextType.ITALIC)
@@ -119,10 +123,78 @@ class TestSplitNodeDelimiter(unittest.TestCase):
             self.assertEqual(new_nodes[i].text, expected_list[i].text)
             self.assertEqual(new_nodes[i].text_type, expected_list[i].text_type)
 
-
-
     def test_no_delimiter_found(self):
         node = TextNode("I have no delimiters!", TextType.TEXT)
         new_nodes:list[TextNode] = split_nodes_delimiter([node], "_", TextType.ITALIC)
         self.assertEqual(new_nodes[0].text, "I have no delimiters!")
         self.assertEqual(new_nodes[0].text_type, TextType.TEXT)
+
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images("This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)")
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_links("This is a link to [BootDev](https://www.boot.dev) and [Google](https://www.google.com)")
+        self.assertListEqual([("BootDev", "https://www.boot.dev"), ("Google", "https://www.google.com")], matches)
+
+    def test_split_image(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.TEXT),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+            ],
+            new_nodes,
+        )
+
+    def test_split_image_single(self):
+        node = TextNode(
+            "![image](https://www.example.COM/IMAGE.PNG)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("image", TextType.IMAGE, "https://www.example.COM/IMAGE.PNG"),
+            ],
+            new_nodes,
+        )
+
+    def test_split_images(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.TEXT),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and another ", TextType.TEXT),
+                TextNode(
+                    "second image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"
+                ),
+            ],
+            new_nodes,
+        )
+
+    def test_split_links(self):
+        node = TextNode(
+            "This is text with a [link](https://boot.dev) and [another link](https://wikipedia.org) with text that follows",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("another link", TextType.LINK, "https://wikipedia.org"),
+                TextNode(" with text that follows", TextType.TEXT),
+            ],
+            new_nodes,
+        )
