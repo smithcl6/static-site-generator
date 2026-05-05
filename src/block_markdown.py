@@ -31,23 +31,17 @@ def block_to_block_type(block:str)->BlockType:
 
     if block.startswith(">"):
         for line in lines:
-            if line.startswith(">") and len(line) > 1:
-                continue
-            else:
+            if not line.startswith(">"):
                 return BlockType.PARAGRAPH
         return BlockType.QUOTE
     elif block.startswith("- "):
         for line in lines:
-            if line.startswith("- "):
-                continue
-            else:
+            if not line.startswith("- "):
                 return BlockType.PARAGRAPH
         return BlockType.UNORDERED_LIST
     elif block.startswith("1. "):
         for i in range(0, len(lines)):
-            if lines[i].startswith(f"{i+1}. "):
-                continue
-            else:
+            if not lines[i].startswith(f"{i+1}. "):
                 return BlockType.PARAGRAPH
         return BlockType.ORDERED_LIST
     else:
