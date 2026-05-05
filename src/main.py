@@ -1,4 +1,5 @@
 import os, shutil
+from generate_page import generate_page
 
 STATIC = "./static"
 PUBLIC = "./public"
@@ -23,10 +24,9 @@ def content_to_destination(directory:list[str]|None, path:str):
 def main():
     if os.path.exists(PUBLIC):
         shutil.rmtree(PUBLIC)
-
     os.mkdir(PUBLIC)
-    
     content_to_destination(os.listdir(STATIC), "")
+    generate_page("content/index.md", "template.html", "public/index.html")
 
 if __name__ == "__main__":
     main()
