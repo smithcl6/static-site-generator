@@ -1,8 +1,11 @@
-import os, shutil
+import os, shutil, sys
 from generate_page import generate_pages_recursive
 
-STATIC = "./static"
-PUBLIC = "./public"
+STATIC = "static"
+PUBLIC = "docs"
+CONTENT = "content"
+TEMPLATE = "template.html"
+DEFAULT_BASE_PATH = "/"
 
 def content_to_destination(directory:list[str]|None, path:str):
     if not directory:
@@ -22,11 +25,14 @@ def content_to_destination(directory:list[str]|None, path:str):
             print(f"Added {item} to {public_path}")
 
 def main():
+    basepath = DEFAULT_BASE_PATH
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
     if os.path.exists(PUBLIC):
         shutil.rmtree(PUBLIC)
     os.mkdir(PUBLIC)
     content_to_destination(os.listdir(STATIC), "")
-    generate_pages_recursive("content", "template.html", "public")
+    generate_pages_recursive(CONTENT, TEMPLATE, PUBLIC, basepath)
 
 if __name__ == "__main__":
     main()
